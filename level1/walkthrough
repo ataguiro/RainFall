@@ -1,0 +1,11 @@
+We use gdb, nm and strings on our kali to deeply analyze the target binary.
+We found a reference to system syscall and a buffer.
+We fulfill incrementally the buffer until an overflow is found.
+We then craft our exploit, following the calling convention, with :
+	- a string overflow
+	- the address of the reference to "system" syscall
+	- the address of the reference to "exit" syscall
+	- the address of the string "/bin/sh"
+
+TODO
+
