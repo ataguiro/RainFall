@@ -1,0 +1,13 @@
+echo "Adding i386 architecture packages..."
+sudo dpkg --add-architecture i386
+echo "Updating sources..."
+sudo apt-get update -y
+echo "Installing i386 libc..."
+sudo apt-get install -y libc6:i386 libncurses5:i386 libstdc++6:i386 strace
+echo "Setting up gdb PEDA..."
+git clone https://github.com/longld/peda.git ~/peda
+echo "source ~/peda/peda.py" >> ~/.gdbinit
+echo "Installing checksec.sh..."
+git clone https://github.com/slimm609/checksec.sh.git ~/checksec.sh
+cd ~/checksec.sh
+cp ~/checksec.sh/checksec /bin/
