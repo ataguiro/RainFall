@@ -1,6 +1,8 @@
-We observe that $1 is copy into a buffer malloc on the stack ?
+There is two coadjacent malloced chunks.
 
-Warning : the exact buffer seems to change due to machine-dependent padding !?
+We overflow the malloced chunck with our target to overwrite the previous data inside the next chunk.
+This previous data should have been called as a function soon after the copy.
 
 python -c 'print "A"*72 + "\x54\x84\x04\x08"' | tr -d "\n" > /tmp/mypayload
+(machine-dependent)
 
