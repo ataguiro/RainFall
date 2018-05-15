@@ -11,3 +11,4 @@ The strncpy for the first parameter is secured but then, a strcat function is ca
 then call system with "sh" parameter.
 We can easly find where "sh" string is, through the "find" command in gdb, then the only thing to do is to write the right number of "garbage string" like "AAAA.." and overflow
 the next 4 bytes with address of system, and then write the address of "sh" on the stack as system's parameter.
+The exploitation technique is a basic ret2libc trick, the "DDDD" are return address of system so we don't care about it, it will segfault when we leave the shell.
