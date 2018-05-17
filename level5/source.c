@@ -8,7 +8,7 @@ void	o(void)
 }
 
 
-void	n(void)
+int	n(void)
 {
 	char	buffer[520];
 
@@ -17,7 +17,7 @@ void	n(void)
 	exit(1);
 }
 
-int	main(oid)
+int	main(void)
 {
 	return (n());
 }
