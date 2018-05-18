@@ -1,1 +1,3 @@
 check section data of source : objdump -s -j .rodata exefile
+
+about structure and variable alignement or higher-meaning
