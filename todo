@@ -1,0 +1,1 @@
+check section data of source : objdump -s -j .rodata exefile
