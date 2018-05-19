@@ -19,13 +19,18 @@ int	main(int argc, char **argv)
 	tmp = malloc(8);
 	*tmp = 1;
 
+	// tmp[1] = malloc(8);
 	*(tmp + 4) = malloc(8);
 
 	tmp2 = malloc(8);
 	*tmp2 = 2;
+	
+	// tmp2[1] = malloc(8);
 	*(tmp2 + 4) = malloc(8);
 
+	// strcpy(tmp[1], argv[1]);
 	strcpy(tmp + 4, argv[1]);
+	// strcpy(tmp2[1], argv[2]);
 	strcpy(tmp2 + 4, argv[1]);
 
 	/* fgets(ptr, 0x44, fopen("/home/user/level8/.pass", "r")); */
