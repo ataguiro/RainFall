@@ -6,5 +6,4 @@ int	main(void)
 
 	gets(buffer);
 	return (buffer);
-	//TODO: return buffer ?
 }

