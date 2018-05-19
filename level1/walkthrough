@@ -10,8 +10,8 @@ Buffer overflow : we overwrite the return address so when the ret instruction ("
 
 ## Crafting
 
-0		     76			  80		    84		  88	
-[RANDOM_PADDING_STRING][SYSTEM INSTRUCTION][EXIT INSTRUCTION][SHELL STRING]
+0		     76			        80		        84		  88	
+[RANDOM_PADDING_STRING][ <libc> SYSTEM_CALL_ADDR][ <libc> EXIT_CALL_ADDR][SHELL_STRING_ADDR]
 			^
 			| RET instruction
 -------------------------
