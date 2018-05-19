@@ -1,8 +1,21 @@
-# Just run ./level0 with gdb until getting to the following instruction:
-0x8048ed9 <main+25>:	cmp    eax,0x1a7
-# If the given parameter equals to 423 (0x1a7) then a shell ("/bin/sh") is executed with execve() after setting the right uid
-# Else, "No!" is displayed and the program exists
-# Just run the binary with parameter 423
-./level0 423 # And enjoy your shell
-$ cat /home/user/level1/.pass
+## Analysis
+
+The binary executes a shell via execve() if first argument is equal to 423. Otherwise "No!" is displayed and the program exists.
+
+`0x8048ed9 <main+25>:	cmp    eax,0x1a7`
+
+## Exploit 
+
+In-clear key to access critical area.
+
+## Crafting 
+
+[KEY]
+
+With KEY equal 423.
+
+## Shooting
+
+./level0 423
+$cat /home/user/level1/.pass
 1fe8a524fa4bec01ca4ea2a869af2a02260d4a7d5fe7e7c24d8617e6dca12d3a
