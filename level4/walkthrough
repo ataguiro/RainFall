@@ -19,7 +19,7 @@ Format string : the printf is called directly with the user-provided input so we
 0		   4			  16		18	     20
 [TARGET_MEMORY_ADDR][RANDOM_PADDING_STRING][$_FORMATTER][%N_FORMATTER]
 	^					^		^
-	| 3.write(len(0 - 64))			|    1.read     |		   2.fetch
+	| 3.write(16930112)			|    1.read     |		   2.fetch
 	|					----------------------- printf() ------------ stack[3] (TARGET_MEMORY_ADDR)
 	|							         |
 	------------------------------------------------------------------
