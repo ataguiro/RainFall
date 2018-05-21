@@ -1,3 +1,34 @@
+## Analysis
+
+The program is executing a infinite loop. It calls fgets() at the beginning of this loop then will compare this buffer to diverse strings("auth", "reset", "login", "service").
+It calls different functions following the result of each cmp.
+If the buffer match "login" and also a previous allocated string not null at itself + 20, then a shell is launched.
+
+`0x080486e2 <+382>:   mov    eax,ds:0x8049aac`
+`0x080486e7 <+387>:   mov    eax,DWORD PTR [eax+0x20]`
+`0x080486ea <+390>:   test   eax,eax`
+`0x080486ec <+392>:   je     0x80486ff <main+411>`
+`0x080486ee <+394>:   mov    DWORD PTR [esp],0x8048833`
+`0x080486f5 <+401>:   call   0x8048480 <system@plt>`
+
+Else a meaningless string is printed.
+
+## Exploit 
+
+Memory corruption : allocated memory chunks are sequential on the heap, so any pointer offset too large from one is a reference into the following one.
+
+## Crafting
+
+0	    5
+[AUTH_STRING] 1.fgets(1st)
+
+0	       7		      32
+[SERVICE_STRING][RANDOM_PADDING_STRING]  2.fgets(2nd)
+
+0	     5
+[LOGIN_STRING] 3.fgets(3rd)
+
+
 level8@RainFall:~$ ./level8 
 (nil), (nil) 
 auth 

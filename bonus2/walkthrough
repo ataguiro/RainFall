@@ -1,7 +1,7 @@
 # Analysis
 
 The program here is quite long, because in the first part of the main function, it just copies our paramters (with secured strncpy() call) into buffers and gets "LANG"
-environment variable and calls a memcmp() on it, to check if it's equal to "fi" or "nl" (that information is then passed to the function greetuser() as an integer flag).
+environment variable and calls a memcmp() on it, to check if it's equal to "fi" or "nl" (that information is then passed to the function greetuser() as an integer flag, but indirectly because it is stored at a static address).
 greetuser() function will check if the flag is eiter equal to 1 or 2, and will adapt the following behavior depending on it. If the flag is set to 0, then it means the "LANG" environment variable is neither equal to "fi" nor "nl".
 The default behavior is the following:
 The program copies a static string "Hello " into a stack buffer, and concatenates in it our given variable as argv[1] (through strcat() function call), then
