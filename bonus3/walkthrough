@@ -6,6 +6,8 @@ Before the comparison, it allows us to write a '\0' character anywhere in the re
 At the end, the program performs a `strcmp(buffer, argv[1]);` and if the passwords are the same, a shell is executed though execl() call, if not then the program 
 calls puts() with the second read buffer, which is equal to "\0" because of the password lenght, then exists.
 The particular vulnerability here is the code allowing us to put a '\0' wherever we want.
+   0x8048584 <main+144>:	call   0x8048430 <atoi@plt>
+=> 0x8048589 <main+149>:	mov    BYTE PTR [esp+eax*1+0x18],0x0
 
 # Exploit
 If we give an empty string with just "\0" in int, then atoi() will return 0 and a '\0' will be placed at the beginning of the password buffer,
