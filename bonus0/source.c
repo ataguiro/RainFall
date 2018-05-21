@@ -1,4 +1,8 @@
-char *p(char *s1, const char *s)
+#include <string.h>
+#include <stdio.h>
+#include <unistd.h>
+
+char *p(char *src, const char *s)
 {
 	char buf[4096];
 	char *ptr;
@@ -6,14 +10,14 @@ char *p(char *s1, const char *s)
 	puts(s);
 	read(0, buf, 4096);
 	*strchr(buf, '\n') = 0;
-	ptr = strncpy(s1, buf, 20);
+	ptr = strncpy(src, buf, 20);
 	return (ptr);
 }
 
 char *pp(char *str)
 {
-	char s1[];
-	char s2[];
+	char s1[21];
+	char s2[21];
 	char *ret;
 
 	p(s1, " - ");

