@@ -28,6 +28,13 @@ Memory corruption : allocated memory chunks are sequential on the heap, so any p
 0	     5
 [LOGIN_STRING] 3.fgets(3rd)
 
+At the first call to fgets(), we provide the "auth " string, this one is malloced.
+Then, to the second call, we provide the "service" string + noise at least equal to 17, this one is malloced too via a call to strdup().
+At the third call to fgets(), we join the "login" string which we unlocked the critical test.
+Test instruction is executed against the chunk of "auth" string + 20, which is a memory addres which we have fulfilled with the second call.
+So it returns true, and the shell with targeted privileges is launched.
+
+## Shooting
 
 level8@RainFall:~$ ./level8 
 (nil), (nil) 
