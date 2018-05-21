@@ -16,6 +16,7 @@ To exploit it, we need to set LANG environment variable to either "fi" or "nl" s
 We overflow the 4 bytes after the 23rd offset on the second parameter, and put the address of system() function there (which will overwrite the saved EIP of greetuser() function).
 Right at the `ret` instruction call, the beginning of our buffer (1st parameter argv[1]) is on the stack, we can use it to pass parameters to system().
 We can easly find where "sh" string is, through the "find" command in gdb, and use it in a ret2libc basic context where the "DDDD" are return address of system so we don't care about it, it will segfault when we leave the shell.
+export LANG="nl"
 
 # Shooting
 

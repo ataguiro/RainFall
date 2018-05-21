@@ -2,7 +2,7 @@
 #include <string.h>
 #include <stdlib.h>
 
-char	*p(void)
+char	*p(void *addr)
 {
 	void	*tmp;
 	char	buffer[64];
@@ -10,8 +10,7 @@ char	*p(void)
 	fflush(stdout);
 	gets(buffer);
 
-	register void *p asm("ebp+0x4");
-	if ((p & 0xb0000000) - 0xb0000000) {
+	if ((p & addr) - addr) {
 		printf("(%p)\n", p);
 		exit(1);
 	}
@@ -21,5 +20,5 @@ char	*p(void)
 
 int	main(void)
 {
-	return (p());
+	return (p(0xb0000000));
 }

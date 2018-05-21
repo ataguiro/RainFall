@@ -7,7 +7,7 @@ char	ptr[68];
 
 int	m(void)
 {
-	printf("%s - %d\n", "", time(0));
+	printf("%s - %d\n", ptr, time(0));
 	return (0);
 }
 
