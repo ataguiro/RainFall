@@ -1,9 +1,10 @@
 # Analysis
 
-This program opens the "/home/user/end/.pass" and reads the password, then it compares our first parameter (argv[1]) with the password read.
+This program opens the "/home/user/end/.pass" and reads the password (twice, but the second read results in "\0"), then it compares our first parameter (argv[1]) with the password read.
 Before the comparison, it allows us to write a '\0' character anywhere in the read password, through our first argument, thanks to this code:
 *(buffer + atoi(argv[1])) = 0; // buffer is where the real password is stored
-At the end, the program performs a `strcmp(buffer, argv[1]);` and if the passwords are the same, a shell is executed though execl() call, if not then the program exists.
+At the end, the program performs a `strcmp(buffer, argv[1]);` and if the passwords are the same, a shell is executed though execl() call, if not then the program 
+calls puts() with the second read buffer, which is equal to "\0" because of the password lenght, then exists.
 The particular vulnerability here is the code allowing us to put a '\0' wherever we want.
 
 # Exploit
