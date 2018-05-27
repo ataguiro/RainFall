@@ -33,5 +33,4 @@ int main(void)
 	char buff[4096];
 	pp(buff);
 	puts(buff);
-	return 0;
 }

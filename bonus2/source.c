@@ -1,10 +1,14 @@
-flag = 0;
+#include <string.h>
+#include <stdlib.h>
+#include <stdio.h>
+
+int flag = 0;
 char s1[0x29];
 char s2[0x21];
 
 char def[] = "Hello ";
-char fi[] = "fihello ";
-char nl[] = "nlhello ";
+char fi[] = "Hyvää päivää ";
+char nl[] = "Goedemiddag! ";
 
 void greetuser(void)
 {
@@ -22,7 +26,7 @@ void greetuser(void)
 			strcpy(hello, def);
 	}
 	strcat(hello, s1);
-	return (puts(hello));
+	puts(hello);
 }
 
 int main(int ac, char **av)
@@ -43,5 +47,5 @@ int main(int ac, char **av)
 				flag = 2;
 		}
 	}
-	return (greetuser());
+	greetuser();
 }
