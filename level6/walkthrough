@@ -1,6 +1,6 @@
 ## Analysis
 
-The program calls malloc() two times. Then it does a strcpy() of the first arg and call the function pointer saved into the second memory chunk.
+The program calls malloc() twice. Then it does a strcpy() of the first arg and calls the function pointer saved into the second memory chunk.
 
 `0x0804848c <+16>:    call   0x8048350 <malloc@plt>`
 `0x08048491 <+21>:    mov    %eax,0x1c(%esp)`

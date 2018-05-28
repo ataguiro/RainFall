@@ -1,12 +1,12 @@
 ## Analysis
 
 The program calls fgets(), which is a secured function against buffer overflow. Then it prints the buffer.
-An impossible check is realized, if it return true, a meaningless string is printed and a shell launched via system call.
+An impossible check is realized, if it returns true, a meaningless string is printed and a shell launched via system call.
 
 `0x080484da <+54>:    mov    0x804988c,%eax`
 `0x080484df <+59>:    cmp    $0x40,%eax`
 
-Otherwise the function return 0.
+Otherwise the function returns 0.
 
 ## Exploit
 
@@ -24,10 +24,10 @@ Format string : the printf is called directly with the user-provided input so we
 	|							         |
 	------------------------------------------------------------------
 
-We provide the %n formatter to printf(). This one let us write into the following argument the number of characters written before meeting it.
+We provide the %n formatter to printf(). This one lets us to write into the following argument the number of characters written before meeting it.
 We use the $x formatter to access the 4th argument on the stack, which is the beginning of our buffer.
-Our buffer head is the memory addres check by the critical cmp instruction.
-We pad our buffer we enough noise to match the other operand of value of cmp instruction.
+Our buffer head is the memory address value checked by the critical cmp instruction.
+We pad our buffer with enough noise to match the other operand of value of cmp instruction.
 						
 ## Shooting
 

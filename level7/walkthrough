@@ -1,6 +1,6 @@
 ## Analysis
 
-The program calls malloc() twice, each time with a size of eight. Then copy into the first one the first argument, and the same for the other.
+The program calls malloc() twice, each time with a size of eight. Then copies into the first one the first argument, and the same for the other.
 More, a fgets() is called with the path to password as argument and bufferized.
 
 `0x080485d8 <+183>:   mov    DWORD PTR [esp+0x8],eax`
