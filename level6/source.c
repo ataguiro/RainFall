@@ -17,17 +17,13 @@ int	m(void)
 int	main(int argc, char **argv)
 {
 	char	*p1;
-	long	*p2;
+	int	(*p2)(void);
 
 	p1 = malloc(64);
-	p2 = malloc(8);
+	p2 = malloc(4);
 
-	memcpy(p2, (long)m, 8);
-	printf("%llx\n", *p2);
-	printf("%p\n", m);
-
-/*	strcpy(p1, argv[1]); */
-/*	p2();	*/
-// TODO: Not finished
+	*p2 = m;
+	strcpy(p1, argv[1]);
+	p2();
 	return (0);
 }
