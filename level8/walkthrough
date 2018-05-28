@@ -22,7 +22,7 @@ Memory corruption : allocated memory chunks are sequential on the heap, so any p
 0	    5
 [AUTH_STRING] 1.fgets(1st)
 
-0	       7		      32
+0	       7		      25
 [SERVICE_STRING][RANDOM_PADDING_STRING]  2.fgets(2nd)
 
 0	     5
